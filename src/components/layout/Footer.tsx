@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import FooterSubscribeForm from './FooterSubscribeForm'
 
 const categories = [
   { name: 'Electronics', slug: 'electronics' },
@@ -62,16 +63,7 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider text-body mb-3">Get Deal Alerts</h3>
             <p className="text-sm text-muted mb-3">Join 10,000+ smart shoppers. No spam, ever.</p>
-            <form className="flex flex-col gap-2">
-              <input
-                type="email"
-                placeholder="your@email.com"
-                className="px-3 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
-              />
-              <button type="submit" className="btn-primary text-sm py-2.5">
-                Get Weekly Deals
-              </button>
-            </form>
+            <FooterSubscribeForm />
           </div>
         </div>
 
