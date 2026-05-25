@@ -35,7 +35,7 @@ export default function AdminPushPage() {
   }
 
   return (
-    <div className="p-8 max-w-xl">
+    <div className="p-4 sm:p-8 max-w-xl">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-body">Push Notifications</h1>
         <p className="text-sm text-muted mt-0.5">Send a browser push notification to all subscribed users.</p>

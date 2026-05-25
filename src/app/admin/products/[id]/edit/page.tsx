@@ -10,7 +10,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   if (!product) notFound()
 
   return (
-    <div className="p-8 max-w-3xl">
+    <div className="p-4 sm:p-8 max-w-3xl">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-body">Edit Product</h1>
         <p className="text-sm text-muted mt-0.5 truncate">{product.name}</p>

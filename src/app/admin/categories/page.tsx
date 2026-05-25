@@ -50,7 +50,7 @@ export default function AdminCategoriesPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-body">Categories</h1>
@@ -110,6 +110,7 @@ export default function AdminCategoriesPage() {
         </div>
       ) : (
         <div className="card overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-surface border-b border-border">
               <tr>
@@ -135,6 +136,7 @@ export default function AdminCategoriesPage() {
               )}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

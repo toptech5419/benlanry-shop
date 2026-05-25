@@ -45,7 +45,7 @@ export default function AdminDashboard() {
   }, [])
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-body">Dashboard</h1>
         <p className="text-sm text-muted mt-1">Welcome back. Here&apos;s what&apos;s happening on Benlanry.</p>
