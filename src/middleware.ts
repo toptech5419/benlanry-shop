@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ADMIN_COOKIE, isValidSession } from '@/lib/admin-auth'
 
-export async function middleware(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-    const cookie = req.cookies.get(ADMIN_COOKIE)?.value
-    if (!await isValidSession(cookie)) {
-      const loginUrl = req.nextUrl.clone()
-      loginUrl.pathname = '/admin/login'
-      return NextResponse.redirect(loginUrl)
+    const cookie = req.cookies.get('benlanry_admin')?.value
+    if (!cookie) {
+      return NextResponse.redirect(new URL('/admin/login', req.url))
     }
   }
 

@@ -59,7 +59,7 @@ export default function MethodologyPage() {
       <div className="mt-8 mb-10">
         <h1 className="text-4xl font-extrabold text-body mb-4">How We Pick Products</h1>
         <p className="text-lg text-muted leading-relaxed">
-          Every recommendation on Benlanry follows a consistent, transparent research process. Here&apos;s exactly how we decide what earns a "Best Pick" badge — and what doesn&apos;t make the cut.
+          Every recommendation on Benlanry follows a consistent, transparent research process. Here&apos;s exactly how we decide what earns a &ldquo;Best Pick&rdquo; badge — and what doesn&apos;t make the cut.
         </p>
       </div>
 
@@ -109,7 +109,7 @@ export default function MethodologyPage() {
           <RefreshCw className="w-4 h-4 text-brand-blue" /> Update Policy
         </h2>
         <p className="text-sm text-muted leading-relaxed">
-          All product pages display a "Last Updated" date. We review our picks at least every 6 months, and immediately when a significantly better product launches or a previously recommended product receives a pattern of negative reviews. Outdated recommendations are either updated or removed — never left to mislead readers.
+          All product pages display a &ldquo;Last Updated&rdquo; date. We review our picks at least every 6 months, and immediately when a significantly better product launches or a previously recommended product receives a pattern of negative reviews. Outdated recommendations are either updated or removed — never left to mislead readers.
         </p>
       </div>
     </div>

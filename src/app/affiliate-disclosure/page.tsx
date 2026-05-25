@@ -45,7 +45,7 @@ export default function AffiliateDisclosurePage() {
           No. Amazon pays the same commission rate for all products within a given category, regardless of which specific product we recommend. There is no financial incentive for us to recommend one product over another.
         </p>
         <p className="text-muted leading-relaxed">
-          Our editorial process is governed by a clear methodology: we research, compare, and test products independently before making any recommendation. A product&apos;s affiliate commission rate is never a factor in whether it receives a "Best Pick" badge or any other editorial distinction.
+          Our editorial process is governed by a clear methodology: we research, compare, and test products independently before making any recommendation. A product&apos;s affiliate commission rate is never a factor in whether it receives a &ldquo;Best Pick&rdquo; badge or any other editorial distinction.
         </p>
         <p className="text-muted leading-relaxed">
           We would rather recommend nothing — or explicitly recommend against a purchase — than mislead a reader for the sake of a commission. Our long-term reputation depends entirely on the quality and honesty of our recommendations.
