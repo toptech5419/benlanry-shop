@@ -12,7 +12,6 @@ interface Deal {
   isActive: boolean
   productId: number
   productName: string | null
-  productSlug: string | null
 }
 
 interface Product { id: number; name: string }
@@ -24,30 +23,20 @@ export default function AdminDealsPage() {
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState<number | null>(null)
-  const [form, setForm] = useState({
-    productId: '', dealPrice: '', originalPrice: '', discountPercent: '', dealExpiresAt: '',
-  })
+  const [form, setForm] = useState({ productId: '', dealPrice: '', originalPrice: '', discountPercent: '', dealExpiresAt: '' })
 
   async function load() {
-    const [dealsRes, prodsRes] = await Promise.all([
-      fetch('/api/admin/deals'),
-      fetch('/api/admin/products'),
-    ])
-    setDeals(await dealsRes.json())
-    setProducts(await prodsRes.json())
+    const [dr, pr] = await Promise.all([fetch('/api/admin/deals'), fetch('/api/admin/products')])
+    setDeals(await dr.json())
+    setProducts(await pr.json())
     setLoading(false)
   }
-
   useEffect(() => { load() }, [])
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
-    await fetch('/api/admin/deals', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    })
+    await fetch('/api/admin/deals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
     setForm({ productId: '', dealPrice: '', originalPrice: '', discountPercent: '', dealExpiresAt: '' })
     setShowForm(false)
     await load()
@@ -57,111 +46,140 @@ export default function AdminDealsPage() {
   async function handleDelete(id: number) {
     if (!confirm('Deactivate this deal?')) return
     setDeleting(id)
-    await fetch('/api/admin/deals', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
-    })
+    await fetch('/api/admin/deals', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
     await load()
     setDeleting(null)
   }
 
+  const activeCount = deals.filter(d => d.isActive).length
+
   return (
-    <div className="p-4 sm:p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-6 max-w-5xl mx-auto">
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-body">Deals</h1>
-          <p className="text-sm text-muted mt-0.5">{deals.filter(d => d.isActive).length} active deals</p>
+          <h1 className="text-xl font-bold text-slate-900">Deals</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{activeCount} active deal{activeCount !== 1 ? 's' : ''}</p>
         </div>
-        <button onClick={() => setShowForm(s => !s)} className="btn-primary flex items-center gap-2">
+        <button
+          onClick={() => setShowForm(s => !s)}
+          className={`flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg transition-colors ${
+            showForm ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' : 'bg-blue-600 text-white hover:bg-blue-700'
+          }`}
+        >
           {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
           {showForm ? 'Cancel' : 'Add Deal'}
         </button>
       </div>
 
+      {/* Add form */}
       {showForm && (
-        <form onSubmit={handleAdd} className="card p-6 mb-6">
-          <h2 className="font-bold text-body mb-4">New Deal</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <form onSubmit={handleAdd} className="bg-white rounded-xl border border-slate-200 p-5 mb-6">
+          <h2 className="text-sm font-semibold text-slate-700 mb-4">New Deal</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">Product *</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1.5">Product *</label>
               <select required value={form.productId} onChange={e => setForm(f => ({ ...f, productId: e.target.value }))}
-                className="w-full border border-border rounded-xl px-3 py-2 text-sm text-body bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue">
-                <option value="">— Select product —</option>
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                <option value="">— Select a product —</option>
                 {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">Deal Price ($) *</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1.5">Deal Price ($) *</label>
               <input required type="number" step="0.01" value={form.dealPrice} onChange={e => setForm(f => ({ ...f, dealPrice: e.target.value }))}
-                className="w-full border border-border rounded-xl px-3 py-2 text-sm text-body focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue"
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 placeholder="29.99" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">Original Price ($)</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1.5">Original Price ($)</label>
               <input type="number" step="0.01" value={form.originalPrice} onChange={e => setForm(f => ({ ...f, originalPrice: e.target.value }))}
-                className="w-full border border-border rounded-xl px-3 py-2 text-sm text-body focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue"
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 placeholder="49.99" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">Discount %</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1.5">Discount %</label>
               <input type="number" value={form.discountPercent} onChange={e => setForm(f => ({ ...f, discountPercent: e.target.value }))}
-                className="w-full border border-border rounded-xl px-3 py-2 text-sm text-body focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue"
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 placeholder="40" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">Expires At</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1.5">Expires At</label>
               <input type="datetime-local" value={form.dealExpiresAt} onChange={e => setForm(f => ({ ...f, dealExpiresAt: e.target.value }))}
-                className="w-full border border-border rounded-xl px-3 py-2 text-sm text-body focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue" />
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
             </div>
           </div>
-          <button type="submit" disabled={saving} className="btn-primary flex items-center gap-2 disabled:opacity-50">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-            Add Deal
-          </button>
+          <div className="mt-4 flex items-center gap-3">
+            <button type="submit" disabled={saving} className="flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors">
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+              Add Deal
+            </button>
+            <button type="button" onClick={() => setShowForm(false)} className="text-sm text-slate-500 hover:text-slate-700">Cancel</button>
+          </div>
         </form>
       )}
 
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
-        </div>
-      ) : (
-        <div className="card overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-surface border-b border-border">
-              <tr>
-                <th className="text-left px-4 py-3 font-medium text-muted">Product</th>
-                <th className="text-left px-4 py-3 font-medium text-muted">Deal Price</th>
-                <th className="text-left px-4 py-3 font-medium text-muted">Original</th>
-                <th className="text-left px-4 py-3 font-medium text-muted">Discount</th>
-                <th className="text-left px-4 py-3 font-medium text-muted">Expires</th>
-                <th className="text-right px-4 py-3 font-medium text-muted">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {deals.map(d => (
-                <tr key={d.id} className={`hover:bg-surface/50 ${!d.isActive ? 'opacity-40' : ''}`}>
-                  <td className="px-4 py-3 font-medium text-body">{d.productName ?? `#${d.productId}`}</td>
-                  <td className="px-4 py-3 font-bold text-deal">${d.dealPrice}</td>
-                  <td className="px-4 py-3 text-muted line-through">{d.originalPrice ? `$${d.originalPrice}` : '—'}</td>
-                  <td className="px-4 py-3">{d.discountPercent ? <span className="badge-deal">-{d.discountPercent}%</span> : '—'}</td>
-                  <td className="px-4 py-3 text-muted text-xs">{d.dealExpiresAt ? new Date(d.dealExpiresAt).toLocaleDateString() : 'No expiry'}</td>
-                  <td className="px-4 py-3 text-right">
-                    <button onClick={() => handleDelete(d.id)} disabled={!d.isActive || deleting === d.id}
-                      className="p-1.5 rounded-lg hover:bg-red-50 text-muted hover:text-red-500 transition-colors disabled:opacity-30">
-                      {deleting === d.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                    </button>
-                  </td>
+      {/* Table */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+          </div>
+        ) : deals.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-sm text-slate-400">No deals yet.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Product</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Deal Price</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Was</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Savings</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Expires</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Status</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Actions</th>
                 </tr>
-              ))}
-              {deals.length === 0 && (
-                <tr><td colSpan={6} className="px-4 py-12 text-center text-muted">No deals yet.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {deals.map(d => {
+                  const expired = d.dealExpiresAt && new Date(d.dealExpiresAt) < new Date()
+                  return (
+                    <tr key={d.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-4 py-3 font-medium text-slate-800">{d.productName ?? `Product #${d.productId}`}</td>
+                      <td className="px-4 py-3 font-bold text-emerald-600">${d.dealPrice}</td>
+                      <td className="px-4 py-3 text-slate-400 line-through text-xs">{d.originalPrice ? `$${d.originalPrice}` : '—'}</td>
+                      <td className="px-4 py-3">
+                        {d.discountPercent
+                          ? <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">-{d.discountPercent}%</span>
+                          : '—'}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-slate-400">
+                        {d.dealExpiresAt ? new Date(d.dealExpiresAt).toLocaleDateString() : 'No expiry'}
+                      </td>
+                      <td className="px-4 py-3">
+                        {!d.isActive || expired
+                          ? <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">Inactive</span>
+                          : <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">Active</span>
+                        }
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <button onClick={() => handleDelete(d.id)} disabled={!d.isActive || deleting === d.id}
+                          className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors disabled:opacity-30">
+                          {deleting === d.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

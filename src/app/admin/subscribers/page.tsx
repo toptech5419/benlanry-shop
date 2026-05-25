@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Bell, CheckCircle, XCircle } from 'lucide-react'
+import { Loader2, Mail, Bell, CheckCircle, XCircle, Users } from 'lucide-react'
 
 interface Subscriber {
   id: number
@@ -11,9 +11,19 @@ interface Subscriber {
   subscribedAt: string
 }
 
+function StatPill({ label, value, color }: { label: string; value: number; color: string }) {
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-3">
+      <p className={`text-2xl font-extrabold ${color}`}>{value}</p>
+      <p className="text-sm text-slate-500">{label}</p>
+    </div>
+  )
+}
+
 export default function AdminSubscribersPage() {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([])
   const [loading, setLoading] = useState(true)
+
   useEffect(() => {
     fetch('/api/admin/subscribers')
       .then(r => r.json())
@@ -25,75 +35,71 @@ export default function AdminSubscribersPage() {
   const pushActive = subscribers.filter(s => s.isPushActive).length
 
   return (
-    <div className="p-4 sm:p-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-body">Subscribers</h1>
-          <p className="text-sm text-muted mt-0.5">{subscribers.length} total — {emailActive} email, {pushActive} push</p>
-        </div>
+    <div className="p-6 max-w-5xl mx-auto">
+
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-slate-900">Subscribers</h1>
+        <p className="text-sm text-slate-500 mt-0.5">{subscribers.length} total subscribers</p>
       </div>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-        <div className="card p-4 text-center">
-          <p className="text-3xl font-extrabold text-body">{subscribers.length}</p>
-          <p className="text-xs text-muted mt-1">Total Subscribers</p>
-        </div>
-        <div className="card p-4 text-center">
-          <p className="text-3xl font-extrabold text-brand-blue">{emailActive}</p>
-          <p className="text-xs text-muted mt-1">Email Active</p>
-        </div>
-        <div className="card p-4 text-center">
-          <p className="text-3xl font-extrabold text-brand-orange">{pushActive}</p>
-          <p className="text-xs text-muted mt-1">Push Active</p>
-        </div>
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <StatPill label="Total" value={subscribers.length} color="text-slate-900" />
+        <StatPill label="Email active" value={emailActive} color="text-blue-600" />
+        <StatPill label="Push active" value={pushActive} color="text-violet-600" />
       </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
-        </div>
-      ) : (
-        <div className="card overflow-hidden">
+      {/* Table */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+          </div>
+        ) : subscribers.length === 0 ? (
+          <div className="text-center py-20">
+            <Users className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+            <p className="text-sm text-slate-400">No subscribers yet.</p>
+          </div>
+        ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-surface border-b border-border">
-                <tr>
-                  <th className="text-left px-4 py-3 font-medium text-muted">Email</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted">Email</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted">Push</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted">Joined</th>
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Email</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">
+                    <span className="flex items-center gap-1"><Mail className="w-3.5 h-3.5" /> Email</span>
+                  </th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">
+                    <span className="flex items-center gap-1"><Bell className="w-3.5 h-3.5" /> Push</span>
+                  </th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Joined</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody className="divide-y divide-slate-100">
                 {subscribers.map(s => (
-                  <tr key={s.id} className="hover:bg-surface/50">
-                    <td className="px-4 py-3 text-body font-medium">{s.email}</td>
+                  <tr key={s.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-4 py-3 font-medium text-slate-800">{s.email}</td>
                     <td className="px-4 py-3">
                       {s.isEmailActive
-                        ? <span className="flex items-center gap-1 text-deal text-xs"><CheckCircle className="w-3.5 h-3.5" />Active</span>
-                        : <span className="flex items-center gap-1 text-muted text-xs"><XCircle className="w-3.5 h-3.5" />Unsubscribed</span>
+                        ? <span className="inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-medium"><CheckCircle className="w-3 h-3" />Active</span>
+                        : <span className="inline-flex items-center gap-1 text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium"><XCircle className="w-3 h-3" />Unsubscribed</span>
                       }
                     </td>
                     <td className="px-4 py-3">
                       {s.isPushActive
-                        ? <span className="flex items-center gap-1 text-deal text-xs"><Bell className="w-3.5 h-3.5" />Active</span>
-                        : <span className="text-xs text-muted">—</span>
+                        ? <span className="inline-flex items-center gap-1 text-xs text-violet-700 bg-violet-50 px-2 py-0.5 rounded-full font-medium"><Bell className="w-3 h-3" />Active</span>
+                        : <span className="text-xs text-slate-300">—</span>
                       }
                     </td>
-                    <td className="px-4 py-3 text-muted text-xs">
-                      {new Date(s.subscribedAt).toLocaleDateString()}
-                    </td>
+                    <td className="px-4 py-3 text-xs text-slate-400">{new Date(s.subscribedAt).toLocaleDateString()}</td>
                   </tr>
                 ))}
-                {subscribers.length === 0 && (
-                  <tr><td colSpan={4} className="px-4 py-12 text-center text-muted">No subscribers yet.</td></tr>
-                )}
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

@@ -2,9 +2,6 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
-import PushOptIn from '@/components/ui/PushOptIn'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -41,7 +38,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={inter.variable}>
       <body className="font-sans antialiased bg-white text-body">
-        {/* OneSignal push notifications SDK */}
         {oneSignalAppId && (
           <Script id="onesignal-init" strategy="afterInteractive">
             {`
@@ -62,11 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             `}
           </Script>
         )}
-
-        <Header />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
-        <PushOptIn />
+        {children}
       </body>
     </html>
   )
