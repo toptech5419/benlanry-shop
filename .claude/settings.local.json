@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(gh auth *)",
+      "Bash(gh --version)",
+      "Bash(vercel --version)",
+      "Bash(npx vercel *)",
+      "Bash(gh api *)",
+      "Bash(vercel whoami *)",
+      "Bash(gh repo *)",
+      "Bash(npx create-next-app@14 . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm)",
+      "Read(//c/Users/okefu/**)",
+      "Bash(npx create-next-app@14 benlanry-temp --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm)",
+      "Bash(git init *)",
+      "Bash(git remote *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}
