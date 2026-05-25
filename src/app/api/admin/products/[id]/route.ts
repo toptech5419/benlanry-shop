@@ -7,7 +7,7 @@ import { cookies } from 'next/headers'
 
 async function checkAuth() {
   const cookieStore = await cookies()
-  return isValidSession(cookieStore.get(ADMIN_COOKIE)?.value)
+  return await isValidSession(cookieStore.get(ADMIN_COOKIE)?.value)
 }
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
