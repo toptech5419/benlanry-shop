@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { subscribers } from '@/db/schema'
+import { sendWelcomeEmail } from '@/lib/resend'
+import { eq } from 'drizzle-orm'
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,10 +11,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Valid email required' }, { status: 400 })
     }
 
-    await db
-      .insert(subscribers)
-      .values({ email: email.toLowerCase().trim() })
-      .onConflictDoNothing()
+    const clean = email.toLowerCase().trim()
+
+    const existing = await db.select().from(subscribers).where(eq(subscribers.email, clean)).limit(1)
+
+    if (existing.length === 0) {
+      await db.insert(subscribers).values({ email: clean, isEmailActive: true })
+      await sendWelcomeEmail(clean).catch(() => {})
+    }
 
     return NextResponse.json({ success: true })
   } catch {

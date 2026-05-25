@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import PushOptIn from '@/components/ui/PushOptIn'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -30,19 +32,41 @@ export const metadata: Metadata = {
     title: 'Benlanry — Discover. Compare. Buy Smart.',
     description: 'Expert-curated Amazon product picks.',
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const oneSignalAppId = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID
+
   return (
     <html lang="en" className={inter.variable}>
       <body className="font-sans antialiased bg-white text-body">
+        {/* OneSignal push notifications SDK */}
+        {oneSignalAppId && (
+          <Script id="onesignal-init" strategy="afterInteractive">
+            {`
+              window.OneSignalDeferred = window.OneSignalDeferred || [];
+              (function() {
+                var oneSignalScript = document.createElement("script");
+                oneSignalScript.src = "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";
+                oneSignalScript.defer = true;
+                document.head.appendChild(oneSignalScript);
+              })();
+              window.OneSignalDeferred.push(async function(OneSignal) {
+                await OneSignal.init({
+                  appId: "${oneSignalAppId}",
+                  notifyButton: { enable: false },
+                  allowLocalhostAsSecureOrigin: true,
+                });
+              });
+            `}
+          </Script>
+        )}
+
         <Header />
         <main className="min-h-screen">{children}</main>
         <Footer />
+        <PushOptIn />
       </body>
     </html>
   )

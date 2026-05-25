@@ -26,9 +26,15 @@ export default function CountdownTimer({ expiresAt }: CountdownTimerProps) {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const left = getTimeLeft()
-      setTimeLeft(left)
-      if (!left) clearInterval(timer)
+      const diff = expiresAt.getTime() - Date.now()
+      if (diff <= 0) { setTimeLeft(null); clearInterval(timer); return }
+      const totalSeconds = Math.floor(diff / 1000)
+      setTimeLeft({
+        hours: Math.floor(totalSeconds / 3600),
+        minutes: Math.floor((totalSeconds % 3600) / 60),
+        seconds: totalSeconds % 60,
+        urgent: Math.floor(totalSeconds / 3600) < 2,
+      })
     }, 1000)
     return () => clearInterval(timer)
   }, [expiresAt])
